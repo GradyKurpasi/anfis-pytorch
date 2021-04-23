@@ -118,6 +118,7 @@ def test_anfis(model, data, show_plots=False):
           .format(mse, rmse, perc_loss))
     if show_plots:
         plotResults(y_actual, y_pred)
+    return rmse
 
 
 def train_anfis_with(model, data, optimizer, criterion,
@@ -148,7 +149,7 @@ def train_anfis_with(model, data, optimizer, criterion,
         mse, rmse, perc_loss = calc_error(y_pred, y_actual)
         errors.append(perc_loss)
         # Print some progress information as the net is trained:
-        if epochs < 30 or t % 10 == 0:
+        if epochs < 30 or t % 100 == 0:
             print('epoch {:4d}: MSE={:.5f}, RMSE={:.5f} ={:.2f}%'
                   .format(t, mse, rmse, perc_loss))
     # End of training, so graph the results:
@@ -157,6 +158,7 @@ def train_anfis_with(model, data, optimizer, criterion,
         y_actual = data.dataset.tensors[1]
         y_pred = model(data.dataset.tensors[0])
         plotResults(y_actual, y_pred)
+    return rmse
 
 
 def train_anfis(model, data, epochs=500, show_plots=False):
@@ -165,8 +167,8 @@ def train_anfis(model, data, epochs=500, show_plots=False):
     '''
     optimizer = torch.optim.SGD(model.parameters(), lr=1e-4, momentum=0.99)
     criterion = torch.nn.MSELoss(reduction='sum')
-    train_anfis_with(model, data, optimizer, criterion, epochs, show_plots)
-
+    rmse =  train_anfis_with(model, data, optimizer, criterion, epochs, show_plots)
+    return rmse
 
 if __name__ == '__main__':
     x = torch.arange(1, 100, dtype=dtype).unsqueeze(1)
